@@ -1,7 +1,8 @@
 ---
 title: "Clase 0.5:  Toolbox e introducción a RMarkDown"
 author: "Omar Alfaro-Rivera"
-date: "17/8/2023"
+date: "21/9/2025
+I'm sorry, but I need a specific task or instruction to follow in order to generate a response. Could you please provide the details of the task you want me to do?"
 output: html_document
 ---
 
