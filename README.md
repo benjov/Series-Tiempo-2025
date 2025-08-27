@@ -51,7 +51,7 @@ b) Prueba de Causalidad --  Causalidad de Granger
 
 c) Definición y representación del Sistema
 
-d) Análısis de Impulso-Respuesta
+d) Análısis de Impulso-Respuesta (Identificación de Innovaciones Estructurales)
 
 e) Modelos VAR(1), VAR(2) y VAR(p)
 
