@@ -80,7 +80,7 @@ Diff_Eq$Process_3 <- 10 - 450*(0.4)^Diff_Eq$Tiempo + 440*(0.5)^Diff_Eq$Tiempo
 # GRAFICA 3
 ggplot(data = Diff_Eq, 
        aes(x = Tiempo, y = Process_3)) + 
-  geom_line(size = 0.5, color = "darkgreen") +
+  geom_line(linewidth = 0.5, color = "darkgreen") +
   geom_point(size = 1.0, color = "darkgreen") + 
   #theme_bw() + 
   theme(legend.position = "none") +
