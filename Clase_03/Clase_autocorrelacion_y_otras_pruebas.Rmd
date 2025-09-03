@@ -112,7 +112,7 @@ plot(Pax_Metro,
      xlab = "Tiempo",  
      type = "l", lwd = 2,
      ylab = "Millones de personas",
-     main = "Pasajeros Transportados en el Metro de la CDMX \n(Ene-2000 a May-2023)",
+     main = "Pasajeros Transportados en el Metro de la CDMX \n(Ene-2000 a Junio-2025)",
      sub = "Fuente: Elaboración propia con información del INEGI")
 
 ```

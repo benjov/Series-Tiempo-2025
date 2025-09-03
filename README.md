@@ -90,5 +90,5 @@ Recomendación: Clonar el repositorio y actualizar constantemente (git pull)
 
 ## 4. Pizarras de clase: https://gamesecon-my.sharepoint.com/:o:/p/boliva/EuuZMgdRnvFBqrsjsL2H6EEBcLaUkT8n3cSaAB6oeqwlzA?e=2zkSrS
 
-## 5. Grabaciones de clase: https://www.youtube.com/playlist?list=PLlCKfRj1U6SyjDgfylPZCd8TG9faw_yDv
+## 5. Grabaciones de clase: https://www.youtube.com/watch?v=F1TFWWHgrYE&list=PLlCKfRj1U6SyjDgfylPZCd8TG9faw_yDv
 
