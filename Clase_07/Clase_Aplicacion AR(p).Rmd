@@ -133,11 +133,11 @@ plot.armaroots(arroots(AR_DLPax_Int),
 
 ```{r}
 
-pacf(LPax_Int[1:294], lag.max = 20,
+pacf(LPax_Int[1:294], lag.max = 30,
      main = "Función de Autocorrelación Parcial de pasajeros en vuelos internacionales de salida",
      xlab = 'Rezagos en k meses')
 
-pacf(DLPax_Int[2:294], lag.max = 20, 
+pacf(DLPax_Int[2:294], lag.max = 30, 
      main = "Función de Autocorrelación Parcial de pasajeros en vuelos internacionales de salida",
      xlab = 'Rezagos en k meses')
 
