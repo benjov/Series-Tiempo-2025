@@ -261,7 +261,7 @@ CON variables exogenas por ESTACIONALIDAD rezagos optimos:
 
 ```{r}
 
-Lag_Opt_ARIMA_Exog(p_max = 8, q_max = 8, 
+Lag_Opt_ARIMA_Exog(p_max = 12, q_max = 12, 
                    X_t = DLPax_Nal, 
                    Ex = 1,
                    Z_t = cbind(D_Ene, D_Feb, D_Jul, D_Dic, D_Mar2020, D_Abr2020, D_Jun2020, D_Jul2020, D_Mar2021))
@@ -271,7 +271,7 @@ Lag_Opt_ARIMA_Exog(p_max = 8, q_max = 8,
 ```{r}
 # Estimacion:
 
-ARMA_Ex_DLPax_Nal_2 <- arima(DLPax_Nal, order = c(6, 0, 6),
+ARMA_Ex_DLPax_Nal_2 <- arima(DLPax_Nal, order = c(9, 0, 9),
                              xreg = cbind(D_Ene, D_Feb, D_Jul, D_Dic, D_Mar2020, D_Abr2020, D_Jun2020, D_Jul2020, D_Mar2021),
                              method = "ML")
 
