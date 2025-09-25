@@ -262,8 +262,8 @@ Lag_Opt_SARIMA_Exog(p_max = 4, q_max = 4,
 
 ```{r}
 
-SARIMA_Ex_DLPax_Nal <- arima(DLPax_Nal_S, order = c(4, 0, 4),
-                             seasonal = c(0, 0, 2),
+SARIMA_Ex_DLPax_Nal <- arima(DLPax_Nal_S, order = c(1, 0, 4),
+                             seasonal = c(0, 0, 1),
                            xreg = dumm_SARIMA,
                            method = "ML")
 
