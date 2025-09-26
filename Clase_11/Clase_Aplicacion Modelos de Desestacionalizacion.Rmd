@@ -1,7 +1,7 @@
 ---
 title: "Clase 11. Aplicacion Modelos de Desestacionalización"
 author: "Benjamin Oliva & Omar Alfaro-Rivera"
-date: "09/10/2021"
+date: "09/09/2025"
 output: html_document
 editor_options: 
   chunk_output_type: inline
