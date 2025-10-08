@@ -39,7 +39,8 @@ Los datos importados son:
 
 * INPC: Indice Nacional de Precios al Consumidor (2QJul2018 = 100)
 * TC: Tipo de Cambio FIX 
-* CETE28: Tasa de rendimiento promedio mensual de los Cetes 28, en por ciento anual*# IGAE: Indicador global de la actividad económica (2013 = 100)
+* CETE28: Tasa de rendimiento promedio mensual de los Cetes 28, en por ciento anual
+* IGAE: Indicador global de la actividad económica (2013 = 100)
 * IPI: Industrial Production Index (2012 = 100)
 
 ```{r}

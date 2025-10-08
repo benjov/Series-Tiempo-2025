@@ -1,7 +1,7 @@
 ---
 title: "Clase 13. Causalidad de Granger"
 author: "Benjamin Oliva & Omar Alfaro-Rivera"
-date: "03/10/2024"
+date: "03/10/2025"
 output: html_document
 editor_options: 
   chunk_output_type: inline
@@ -53,29 +53,23 @@ tail(Datos_Ad)
 
 ```{r}
 
-INPC <- ts(Datos_Ad$INPC_Ad, 
+LINPC <- ts(log(Datos_Ad$INPC_Ad), 
            start = c(2000, 1), 
            freq = 12)
 
-DLINPC <- ts(log(Datos_Ad$INPC_Ad) - lag(log(Datos_Ad$INPC_Ad), 1), 
-             start = c(2000, 1), 
-             freq = 12)
-
-TC <- ts(Datos_Ad$TC_Ad, 
+DLINPC <- diff(LINPC, lag = 1, differences = 1)
+  
+LTC <- ts(log(Datos_Ad$TC_Ad), 
          start = c(2000, 1), 
          freq = 12)
 
-DLTC <- ts(log(Datos_Ad$TC_Ad) - lag(log(Datos_Ad$TC_Ad), 1), 
-           start = c(2000, 1), 
-           freq = 12)
+DLTC <- diff(LTC, lag = 1, differences = 1)
 
 CETE28 <- ts(Datos_Ad$CETE28_Ad, 
              start = c(2000, 1), 
              freq = 12)
 
-DLCETE28 <- ts(log(Datos_Ad$CETE28_Ad) - lag(log(Datos_Ad$CETE28_Ad), 1), 
-               start = c(2000, 1), 
-               freq = 12)
+DCETE28 <- diff(CETE28, lag = 1, differences = 1)
 
 ```
 
@@ -93,8 +87,8 @@ plot(DLTC, xlab = "Tiempo",
      main = "Diferencias Logarítmicas del Tipo de Cambio",
      col = "darkblue")
 
-plot(DLCETE28, xlab = "Tiempo", 
-     main = "Diferencias Logarítmicas de los Cetes a 28 dias",
+plot(DCETE28, xlab = "Tiempo", 
+     main = "Diferencias de los Cetes a 28 dias",
      col = "darkred")
 
 par(mfrow=c(1, 1))
@@ -103,17 +97,12 @@ par(mfrow=c(1, 1))
 
 ## Prueba de Causalidad de Granger
 
-### Combinacion en un solo set de datos
-
-```{r }
-
-Datos <- data.frame(cbind(DLINPC, DLTC, DLCETE28))
-
-Datos <- cbind(Datos_Ad["FECHA"], Datos)
+```{r}
+Datos <- data.frame( cbind(DLINPC, DLTC, DCETE28) )
 
 names(Datos)
-
 ```
+
 
 ## Las pruebas de causalidad para 4, 8, 12 y 16 rezagos:
 
@@ -132,25 +121,25 @@ grangertest(DLTC ~ DLINPC, order = 4, data = Datos)
 
 ```{r }
 
-grangertest(DLINPC ~ DLCETE28, order = 4, data = Datos)
+grangertest(DLINPC ~ DCETE28, order = 4, data = Datos)
 
 ```
 
 ```{r }
 
-grangertest(DLCETE28 ~ DLINPC, order = 4, data = Datos)
+grangertest(DCETE28 ~ DLINPC, order = 4, data = Datos)
 
 ```
 
 ```{r }
 
-grangertest(DLTC ~ DLCETE28, order = 4, data = Datos)
+grangertest(DLTC ~ DCETE28, order = 4, data = Datos)
 
 ```
 
 ```{r }
 
-grangertest(DLCETE28 ~ DLTC, order = 4, data = Datos)
+grangertest(DCETE28 ~ DLTC, order = 4, data = Datos)
 
 ```
 
@@ -169,25 +158,25 @@ grangertest(DLTC ~ DLINPC, order = 8, data = Datos)
 
 ```{r }
 
-grangertest(DLINPC ~ DLCETE28, order = 8, data = Datos)
+grangertest(DLINPC ~ DCETE28, order = 8, data = Datos)
 
 ```
 
 ```{r }
 
-grangertest(DLCETE28 ~ DLINPC, order = 8, data = Datos)
+grangertest(DCETE28 ~ DLINPC, order = 8, data = Datos)
 
 ```
 
 ```{r }
 
-grangertest(DLTC ~ DLCETE28, order = 8, data = Datos)
+grangertest(DLTC ~ DCETE28, order = 8, data = Datos)
 
 ```
 
 ```{r }
 
-grangertest(DLCETE28 ~ DLTC, order = 8, data = Datos)
+grangertest(DCETE28 ~ DLTC, order = 8, data = Datos)
 
 ```
 
@@ -206,25 +195,25 @@ grangertest(DLTC ~ DLINPC, order = 12, data = Datos)
 
 ```{r }
 
-grangertest(DLINPC ~ DLCETE28, order = 12, data = Datos)
+grangertest(DLINPC ~ DCETE28, order = 12, data = Datos)
 
 ```
 
 ```{r }
 
-grangertest(DLCETE28 ~ DLINPC, order = 12, data = Datos)
+grangertest(DCETE28 ~ DLINPC, order = 12, data = Datos)
 
 ```
 
 ```{r }
 
-grangertest(DLTC ~ DLCETE28, order = 12, data = Datos)
+grangertest(DLTC ~ DCETE28, order = 12, data = Datos)
 
 ```
 
 ```{r }
 
-grangertest(DLCETE28 ~ DLTC, order = 12, data = Datos)
+grangertest(DCETE28 ~ DLTC, order = 12, data = Datos)
 
 ```
 
@@ -243,25 +232,25 @@ grangertest(DLTC ~ DLINPC, order = 16, data = Datos)
 
 ```{r }
 
-grangertest(DLINPC ~ DLCETE28, order = 16, data = Datos)
+grangertest(DLINPC ~ DCETE28, order = 16, data = Datos)
 
 ```
 
 ```{r }
 
-grangertest(DLCETE28 ~ DLINPC, order = 16, data = Datos)
+grangertest(DCETE28 ~ DLINPC, order = 16, data = Datos)
 
 ```
 
 ```{r }
 
-grangertest(DLTC ~ DLCETE28, order = 16, data = Datos)
+grangertest(DLTC ~ DCETE28, order = 16, data = Datos)
 
 ```
 
 ```{r }
 
-grangertest(DLCETE28 ~ DLTC, order = 16, data = Datos)
+grangertest(DCETE28 ~ DLTC, order = 16, data = Datos)
 
 ```
 
