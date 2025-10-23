@@ -1,7 +1,7 @@
 ---
-title: "Clase 15. VAR(p) - Analisis de Impulso-Respuesta"
+title: "Clase 16. VAR(p) - Analisis de Impulso-Respuesta"
 author: "Benjamin Oliva & Omar Alfaro-Rivera"
-date: "10/10/2021"
+date: "10/10/2025"
 output: html_document
 editor_options: 
   chunk_output_type: inline
@@ -69,7 +69,7 @@ DLTC <- ts(log(Datos_Ad$TC_Ad) - lag(log(Datos_Ad$TC_Ad), 1),
            start = c(2000, 1), 
            freq = 12)
 
-DLCETE28 <- ts(log(Datos_Ad$CETE28_Ad) - lag(log(Datos_Ad$CETE28_Ad), 1), 
+DCETE28 <- ts(Datos_Ad$CETE28_Ad - lag(Datos_Ad$CETE28_Ad, 1), 
                start = c(2000, 1), 
                freq = 12)
 
@@ -88,7 +88,7 @@ DLIPI <- ts(log(Datos_Ad$IPI_Ad) - lag(log(Datos_Ad$IPI_Ad), 1),
 ### 1
 ```{r}
 
-Datos <- data.frame(cbind(DLINPC, DLTC, DLCETE28, DLIGAE, DLIPI))
+Datos <- data.frame(cbind(DLINPC, DLTC, DCETE28, DLIGAE, DLIPI))
 
 ```
 
@@ -175,8 +175,10 @@ arch.test(VAR_p, lags.multi = 2)
 
 ?irf
 
-#
+```
 
+```{r }
+#
 IR_DLINPC <- irf(VAR_p, n.ahead = 12, boot = TRUE, 
                  ci = 0.95, response = "DLINPC")
 
@@ -207,7 +209,7 @@ plot(IR_DLTC)
 ```{r }
 
 IR_DLCETE28 <- irf(VAR_p, n.ahead = 12, boot = TRUE,
-                   ci = 0.95, response = "DLCETE28")
+                   ci = 0.95, response = "DCETE28")
 
 IR_DLCETE28
 
