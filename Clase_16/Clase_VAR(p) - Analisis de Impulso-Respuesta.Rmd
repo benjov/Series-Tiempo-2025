@@ -111,7 +111,7 @@ VARselect(Datos, lag.max = 12, type = "const")
 
 ```{r }
 
-VAR_p <- VAR(Datos, p = 2, type = "const")
+VAR_p <- VAR(Datos, p = 1, type = "const")
 
 summary(VAR_p)
 
