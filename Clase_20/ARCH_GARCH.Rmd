@@ -1,7 +1,7 @@
 ---
 title: "Aplicacion ARCH(q) y GARCH(p,q)"
 author: "Benjamin Oliva & Omar Alfaro-Rivera"
-date: "23/11/2024"
+date: "11/11/2025"
 output: html_document
 ---
 
@@ -39,7 +39,7 @@ library(Rcpp)
 
 Para el análisis de temas financieros existe una librería de mucha utilidad llamada __quantmod__. En primer lugar esta librería permite acceder a datos financieros de un modo muy simple, es posible decargar series financieras desde _yahoo_, la _FRED (Federal Reserve Economic Data)_, _google_, etc. Por otro lado también es una librería que permite realizar gráficos altamente estéticos con unas cuantas líneas de código. 
 
-```{r}
+```{r warning=FALSE}
 
 options("getSymbols.warning4.0"=FALSE)
 
@@ -47,6 +47,10 @@ BTC <-getSymbols("BTC-USD", src = "yahoo", auto.assign = FALSE)
 
 BTC <- na.omit(BTC)
 
+head(BTC)
+```
+
+```{r}
 chartSeries(BTC,TA='addBBands();
                     addBBands(draw="p");
                     addVo();
@@ -55,7 +59,6 @@ chartSeries(BTC,TA='addBBands();
               subset='2024',
                 theme="white")
 
-head(BTC)
 ```
 
 Para fines del ejercicio de esta clase, usaremos el valor de la acción ajustado. Esto nos servirá para calcular el rendimiento diario, o puesto en lenguaje de series temporales podemos decir que usaremos la serie en diferencias logarítmicas. 
@@ -177,16 +180,24 @@ logret_mean = dynlm(logret~1)
 
 summary(logret_mean)
 
+```
+
+```{r}
 ehatsq = ts(resid(logret_mean)^2)
 
 ARCH_m = dynlm(ehatsq~L(ehatsq))
 
 summary(ARCH_m)
 
+```
 
+```{r}
 acf(ARCH_m$residuals)
 acf(abs(ARCH_m$residuals))
 
+```
+
+```{r}
 ArchTest(logret, lags = 1, demean = TRUE)
 ```
 
@@ -201,15 +212,23 @@ $\varepsilon$~$N(0,1)$
 ```{r}
 library(rugarch)
 
+```
+
+```{r}
 auto.arima(logret)
 
+```
+
+```{r}
 model.spec = ugarchspec(variance.model = list(model = 'sGARCH' , garchOrder = c(1, 0)), 
                         mean.model = list(armaOrder = c(2,0)), distribution.model = "std")
 
 arch.fit = ugarchfit(spec = model.spec , data = logret, solver = 'solnp')
 
 arch.fit@fit$matcoef
+```
 
+```{r}
 boot.garch <- ugarchboot(arch.fit,
                          method = "Partial",
                          sampling = "raw",  #bootstrap from fitted varepsilon
@@ -222,7 +241,9 @@ rvec <- boot.garch@fseries
 alpha <- 0.05
 VaR <- quantile(rvec, alpha)
 round(VaR,6)
+```
 
+```{r}
 F_inv = qt(0.05, t.fit$estimate[3])
 
 tiempo= time(BTC[-1])
@@ -249,7 +270,9 @@ model.spec = ugarchspec(variance.model = list(model = 'sGARCH' , garchOrder = c(
 
 fit.garch.n = ugarchfit(spec = model.spec, data = logret, solver = "solnp")
 fit.garch.n@fit$matcoef
+```
 
+```{r}
 boot.garch <- ugarchboot(fit.garch.n,
                          method = "Partial",
                          sampling = "raw",  #bootstrap from fitted varepsilon
@@ -261,7 +284,9 @@ rvec <- boot.garch@fseries
 alpha <- 0.05
 VaR <- quantile(rvec, alpha)
 VaR
+```
 
+```{r}
 F_inv = qt(0.05, t.fit$estimate[3])
 
 tiempo= time(BTC[-1])
@@ -288,7 +313,9 @@ $\varepsilon$~$N(0,1)$
 
 infocriteria(fit.garch.n)
 
+```
 
+```{r}
 #Selección del modelo óptimo
 
 source("Lag_Opt_GARCH.R")
@@ -300,7 +327,7 @@ Lag_Opt_GARCH(ehatsq,4,4)
 
 # Estimación de modelo óptimo 
 
-model.spec = ugarchspec(variance.model = list(model = 'sGARCH' , garchOrder = c(4,2)), 
+model.spec = ugarchspec(variance.model = list(model = 'sGARCH' , garchOrder = c(4,4)), 
                         mean.model = list(armaOrder = c(2,0)), distribution.model = "std")
 
 
@@ -308,7 +335,9 @@ model.fit = ugarchfit(spec = model.spec , data = logret, solver = 'solnp')
 
 model.fit@fit$matcoef
 
+```
 
+```{r}
 boot.garch <- ugarchboot(model.fit,
                          method = "Partial",
                          sampling = "raw",  #bootstrap from fitted varepsilon
@@ -321,15 +350,16 @@ rvec <- boot.garch@fseries
 alpha <- 0.05
 VaR <- quantile(rvec, alpha)
 VaR
+```
 
+```{r}
 F_inv = qt(0.05, t.fit$estimate[3])
 
 tiempo= time(BTC[-1])
 
 ggplot()+
   geom_point(aes(y = logret,x = tiempo),colour = 'lightgrey' , size = 2) + 
-  geom_line(aes(y = model.fit@fit$sigma*(F_inv), x = tiempo), colour = 'red
-            ') +
+  geom_line(aes(y = model.fit@fit$sigma*(F_inv), x = tiempo), colour = 'red') +
   geom_hline(yintercept = sd(logret)*qnorm(0.05) , colour = 'darkgreen' , size = 1.2) + theme_light() + 
   labs(x = '' , y = 'Daily Returns' , title = 'Value at Risk Comparison')
 
