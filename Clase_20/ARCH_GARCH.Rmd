@@ -48,6 +48,8 @@ BTC <-getSymbols("BTC-USD", src = "yahoo", auto.assign = FALSE)
 BTC <- na.omit(BTC)
 
 head(BTC)
+
+dim(BTC)
 ```
 
 ```{r}
@@ -56,7 +58,7 @@ chartSeries(BTC,TA='addBBands();
                     addVo();
                     addMACD()', 
                   
-              subset='2024',
+              #subset='2025',
                 theme="white")
 
 ```

@@ -1,0 +1,107 @@
+---
+title: "Multivariate GARCH CAse 2"
+author: "Benjamin Olvida & Omar Alfaro"
+date: "2025-11-12"
+output: html_document
+---
+
+```{r cars, warning=FALSE}
+library(quantmod)
+library(rmgarch)
+library(xts)
+
+```
+
+## Carga de Datos
+```{r warning=FALSE}
+# Fechas del ejemplo
+start_date <- "2015-01-01"
+end_date   <- Sys.Date()
+
+# Descargar datos desde Yahoo Finance
+getSymbols("^GSPC", src = "yahoo", from = start_date, to = end_date)
+getSymbols("MXN=X", src = "yahoo", from = start_date, to = end_date)
+
+# Precios de cierre
+sp500 <- Cl(GSPC)
+mxn   <- Cl(`MXN=X`)
+
+# Unir y eliminar NAs
+data_prices <- na.omit(merge(sp500, mxn))
+
+data_prices
+
+```
+
+
+```{r}
+# Rendimientos logarítmicos
+ret <- diff(log(data_prices))[-1]
+colnames(ret) <- c("sp500", "mxn")
+
+head(ret)
+```
+
+## Especificación univariada GARCH(1,1)
+
+```{r}
+
+uspec <- ugarchspec(
+  variance.model = list(model = "sGARCH", garchOrder = c(1,1)),
+  mean.model     = list(armaOrder = c(0,0), include.mean = FALSE),
+  distribution.model = "norm"
+)
+
+```
+
+## Modelo Dynamic Conditional Correlation (DCC)-GARCH(1,1)
+
+```{r}
+spec <- dccspec(
+  uspec = multispec(replicate(2, uspec)),
+  dccOrder = c(1,1),
+  distribution = "mvnorm"
+)
+
+fit <- dccfit(spec, data = ret)
+fit
+
+```
+
+```{r}
+cov_t <- rcov(fit)
+last_cov <- cov_t[,,ncol(ret)]
+last_cov
+
+```
+
+```{r}
+vol_t <- sigma(fit)
+tail(vol_t)
+
+```
+
+```{r}
+# Convertir a objeto xts con nombres claros
+colnames(vol_t) <- colnames(ret)
+
+# Graficar
+plot(vol_t[,1], type = "l", col = "blue", lwd = 2,
+     main = "Volatilidad Condicional - Activo 1",
+     ylab = "Sigma_t", xlab = "Tiempo")
+
+plot(vol_t[,2], type = "l", col = "red", lwd = 2,
+     main = "Volatilidad Condicional - Activo 2",
+     ylab = "Sigma_t", xlab = "Tiempo")
+
+```
+
+
+```{r}
+plot(vol_t[,1], type = "l", col = "blue", lwd = 2,
+     main = "Volatilidades Condicionales (DCC-GARCH)",
+     ylab = "Sigma_t", xlab = "Tiempo")
+lines(vol_t[,2], col = "red", lwd = 2)
+
+```
+

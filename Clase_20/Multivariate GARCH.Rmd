@@ -34,6 +34,10 @@ library(tsbox)
 library(MTS)
 library(rmgarch)
 library(Rcpp)
+library(plotly)
+library(xts)
+library(zoo)
+
 ```
 
 ## Including Plots
@@ -43,10 +47,11 @@ You can also embed plots, for example:
 ```{r, echo=FALSE, warning=FALSE}
 options("getSymbols.warning4.0"=FALSE)
 
+inicio <- as.Date("2020-01-01")
 
-BTC <-getSymbols("BTC-USD", src = "yahoo", auto.assign = FALSE)
-ETH <-getSymbols("ETH-USD", src = "yahoo", auto.assign = FALSE)
-BNB <-getSymbols("BNB-USD", src = "yahoo", auto.assign = FALSE)
+BTC <-getSymbols("BTC-USD", src = "yahoo", from = inicio, auto.assign = FALSE)
+ETH <-getSymbols("ETH-USD", src = "yahoo", from = inicio, auto.assign = FALSE)
+BNB <-getSymbols("BNB-USD", src = "yahoo", from = inicio, auto.assign = FALSE)
 ```
 
 ```{r}
@@ -84,40 +89,109 @@ ln_BNB <- diff(log(BNB$`BNB-USD.Adjusted`))
 
 
 ```{r }
+
 r_t=cbind(ln_BTC, ln_ETH, ln_BNB)
 
-
-returns = window(r_t, start = "2017-11-10")
-```
-
-```{r}
-xspec = ugarchspec(mean.model = list(armaOrder = c(1, 1)), variance.model = list(garchOrder = c(1,1), model = 'sGARCH'), distribution.model = 'norm')
-uspec = multispec(replicate(3, xspec))
-spec1 = dccspec(uspec = uspec, dccOrder = c(1, 1), distribution = 'mvnorm')
-spec1a = dccspec(uspec = uspec, dccOrder = c(1, 1), model='aDCC', distribution = 'mvnorm')
-```
-
-```{r}
-cl = makePSOCKcluster(3)
-multf = multifit(uspec, returns, cluster = cl)
-```
-
-```{r}
-fit1 = dccfit(spec1, data = returns, fit.control = list(eval.se = TRUE, scale = TRUE), fit = multf, cluster = cl)
-print(fit1)           
+returns = window(r_t, start = inicio)
 
 ```
 
+```{r}
+
+returns <- na.omit(returns)
+colnames(returns) <- c("BTC", "ETH", "BNB")
+
+fechas <- index(returns)
+
+panel_line <- function(y, nombre) {
+  plot_ly() |>
+    add_lines(
+      x = fechas,
+      y = as.numeric(y),
+      name = nombre,
+      showlegend = TRUE,          # <- activar leyenda
+      legendgroup = nombre        # <- agrupa por serie (útil si agregas más trazas)
+    ) |>
+    layout(yaxis = list(title = "Log-returns"))
+}
+
+p_btc <- panel_line(returns$BTC, "BTC")
+p_eth <- panel_line(returns$ETH, "ETH")
+p_bnb <- panel_line(returns$BNB, "BNB")
+
+subplot(p_btc, p_eth, p_bnb,
+        nrows = 3, shareX = TRUE, titleY = TRUE, heights = c(0.34, 0.33, 0.33)) |>
+  layout(
+    title = "Log-returns: BTC, ETH, BNB",
+    xaxis  = list(rangeslider = list(visible = TRUE)),
+    hovermode = "x unified",
+    legend = list(orientation = "h", x = 0, y = 1.02, xanchor = "left", yanchor = "bottom")
+  )
+
+```
+
+```{r}
+# 1) Limpiar y alinear
+colnames(returns) <- c("BTC","ETH","BNB")
+
+# Si descargaste desde "2020-01-01", el primer diff es NA porque falta 2019-12-31.
+# Opción rápida: elimina cualquier fila con NA/Inf
+returns0 <- returns
+returns0 <- returns0[apply(is.finite(returns0), 1, all), ]   # quita NA/NaN/Inf fila a fila
+returns0 <- na.omit(returns0)
+
+stopifnot(NROW(returns0) > 200)  # ten suficientes obs.
+```
+
+
+```{r}
+# 2) Especificación básica univariada
+uspec <- ugarchspec(
+  mean.model     = list(armaOrder = c(0,0), include.mean = TRUE),
+  variance.model = list(model = "sGARCH", garchOrder = c(1,1)),
+  distribution.model = "std"
+)
+```
 
 ```{r}
 
+# 3) Verifica que cada univariado converge (clave para detectar la causa)
+u_ok <- lapply(1:NCOL(returns0), function(i) {
+  fit <- try(ugarchfit(uspec, data = returns0[, i], solver = "hybrid"), silent = TRUE)
+  if (inherits(fit, "try-error")) {
+    message(sprintf("Falla en %s: %s", colnames(returns0)[i],
+                    attr(fit, "condition")$message))
+    return(FALSE)
+  } else {
+    return(convergence(fit) == 0)
+  }
+})
+if (!all(unlist(u_ok))) stop("Alguna serie univariada no converge: revisa limpieza/órdenes.")
+
+```
+
+```{r}
+# 4) DCC-GARCH con ajustes que suelen evitar fallos
+mspec   <- multispec(rep(list(uspec), NCOL(returns0)))
+
+dccspec <- dccspec(
+  uspec = mspec,
+  dccOrder = c(1,1),
+  distribution = 'mvt'#"mvnorm"   # más estable que "mvt" si hay problemas de convergencia
+)
+
+dccfit_baseline <- dccfit(
+  dccspec,
+  data = returns0,
+  solver = "solnp",                     # estable para rmgarch
+  fit.control = list(eval.se = FALSE,   # evita fallos por Hessiano
+                     scale   = TRUE)    # estandariza internamente
+)
+
+```
 
 
-plot(fit1, which=1)
-plot(fit1, which=2)
-plot(fit1, which=3)
-plot(fit1, which=4)
-plot(fit1, which=5)
+```{r}
 
-
+print(dccfit_baseline)
 ```
