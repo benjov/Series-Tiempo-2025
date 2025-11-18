@@ -1,7 +1,7 @@
 ---
-title: "Modelo Dif-in-Dif para el INPC de análsis clínicos (update nov-2022)"
+title: "Clase 21 b. Modelo Dif-in-Dif para el INPC de análsis clínicos (update nov-2022)"
 author: "Benjamín Oliva"
-date: "05/11/2024"
+date: "05/11/2025"
 output: html_document
 editor_options: 
   chunk_output_type: inline
@@ -57,11 +57,13 @@ Data = read_excel("baseModeloINPC_Oct2022.xlsx", sheet = "Dummys")
 
 dim(Data)
 
+```
+
+```{r}
 names(Data) <- c( "Fecha", "Mes",  "Anio", "Ciudad", "INPC", "Dummy_FIRMA", "Marca_01", "Marca_02", "Marca_03",
                   "Marca_04", "Marca_05", "Marca_06", "Marca_07", "Marca_08", "Marca_09", "Marca_10",	"Marca_11")
 
 head(Data)
-
 ```
 
 # Selección de ciudades:
