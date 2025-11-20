@@ -1,7 +1,7 @@
 ---
 title: "Clase 22. Datos Panel -- VAR(p)"
 author: "Benjamin Oliva & Omar Alfaro-Rivera"
-date: "30/11/2021"
+date: "19/11/2025"
 output: html_document
 editor_options: 
   chunk_output_type: inline
@@ -122,6 +122,7 @@ ex2_dahlberg_data <- pvargmm(dependent_vars = c("expenditures", "revenues", "gra
                              collapse = FALSE)
 
 ```
+
 ```{r}
 
 summary(ex2_dahlberg_data)
